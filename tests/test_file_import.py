@@ -1,7 +1,7 @@
 """Unittest of actigex.app.file_import"""
 
 import unittest
-from src import file_import, actiwatch
+from actiwatch import file_import, actiwatch
 
 class FileImport_Test(unittest.TestCase):
     def setUp(self):

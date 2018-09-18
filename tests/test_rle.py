@@ -1,7 +1,7 @@
 """Unittest of actigex.app.rle"""
 
 import unittest
-from src import rle
+from actiwatch import rle
 
 class TestRLE(unittest.TestCase):
     def setUp(self):
