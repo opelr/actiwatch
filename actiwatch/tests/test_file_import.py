@@ -5,7 +5,7 @@ from actiwatch import file_import, actiwatch
 
 class FileImport_Test(unittest.TestCase):
     def setUp(self):
-        self.path = 'tests/Example_Data_Bedtime.csv'
+        self.path = 'actiwatch/tests/Example_Data_Bedtime.csv'
     
     def test_import(self):
         headers = file_import.get_actigraphy_headers(self.path)
