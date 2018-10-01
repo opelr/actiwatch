@@ -33,7 +33,7 @@ def get_sunrise(df, date_column: str):
     ## Merge sun_DF and df
     df_merged = pd.merge(df, sun_DF, on=date_column, how="inner")
     df_merged["DateTime"] = pd.to_datetime(df_merged["DateTime"]).dt.tz_localize(
-        "US/Pacific"
+        "US/Pacific", ambiguous="infer"
     )
     df_merged["SunPeriod"] = np.where(
         (
