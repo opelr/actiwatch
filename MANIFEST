@@ -9,5 +9,6 @@ actiwatch\rle.py
 actiwatch\sleep_processing.py
 actiwatch\sunrise.py
 actiwatch\tests\__init__.py
+actiwatch\tests\test_DST.py
 actiwatch\tests\test_file_import.py
 actiwatch\tests\test_rle.py
