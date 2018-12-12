@@ -1,5 +1,6 @@
 """Unittest of actigex.app.file_import"""
 
+from .context import actiwatch
 import unittest
 import pandas as pd
 
