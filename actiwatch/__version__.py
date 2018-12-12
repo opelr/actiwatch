@@ -1,0 +1,8 @@
+__title__ = "actiwatch"
+__description__ = "Actiwatch is a Python module built for interacting with Philips Actiwatch actigraphy devices."
+__url__ = ""
+__version__ = "0.1.2"
+__author__ = "Ryan Opel"
+__author_email__ = "ryan.a.opel@gmail.com"
+__license__ = "GPL 3.0"
+__copyright__ = "Copyright 2018 Ryan Opel"

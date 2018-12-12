@@ -1,9 +1,37 @@
-"""Sunrise and Sunset times"""
+# -*- coding: utf-8 -*-
 
+"""
+actiwatch.helpers
+~~~~~~~~~~~~~~~~~
+
+Helper functions
+"""
+
+from itertools import groupby
 from datetime import datetime
 import pandas as pd
 import numpy as np
 from astral import Location
+from typing import Iterable
+
+
+def encode(sequence: Iterable):
+    """Enumerate continuous observations in a sequence
+
+    Args:
+        sequence (Iterable): Sequence to enumerate
+    """
+    return [[len(list(g)), k] for k, g in groupby(sequence)]
+
+
+def decode(encode_obj: list):
+    """Reconstruct `encoded` sequence
+
+    Args:
+        encode_obj (list): Encode object (from `encode`) to stitch together
+    """
+    nested = [[c] * n for n, c in encode_obj]
+    return [i for j in nested for i in j]
 
 
 def get_sunrise(df, date_column: str):
@@ -46,3 +74,20 @@ def get_sunrise(df, date_column: str):
     assert len(df.index) == row_verification
 
     return df_merged
+
+
+def enum_dates(df):
+    """Return enumerated Date column
+
+    Args:
+        df (pd.DataFrame): Actiware dataframe with "Date" column
+    """
+
+    sorted_dates = sorted(list(set(df["Date"])))
+    date_DF = pd.DataFrame(list(enumerate(sorted_dates)))
+    date_DF.columns = ["Enum_Day", "Date"]
+
+    df = pd.merge(df, date_DF, on="Date", how="inner")
+    df = df.drop(["Day"], axis=1)
+    df = df.rename(columns={"Enum_Day": "Day"})
+    return df

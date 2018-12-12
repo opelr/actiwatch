@@ -1,3 +1,4 @@
+import setuptools
 from distutils.core import setup
 
 setup(
@@ -5,9 +6,10 @@ setup(
     version="0.1.2",
     author="Ryan Opel",
     author_email="ryan.a.opel@gmail.com",
-    packages=["actiwatch", "actiwatch.tests"],
-    license="LICENSE",
-    description="Class for reading Philips Actiwatch data",
+    description="Actiwatch is a Python module built for interacting with Philips Actiwatch actigraphy devices.",
     long_description=open("README.md").read(),
+    url="",
+    packages=setuptools.find_packages(),
+    license="LICENSE",
     install_requires=["pandas >= 0.23.0", "astral == 1.6.1", "numpy == 1.15.1"],
 )

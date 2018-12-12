@@ -2,7 +2,7 @@
 
 # import pandas as pd
 import numpy as np
-from .rle import encode, decode
+from .helpers import encode, decode
 
 def windowed_sleep(df_col, threshold: int):
     """Replicates Actiware's threshold-based sleep-staging algorithm

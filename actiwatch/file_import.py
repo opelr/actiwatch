@@ -1,4 +1,11 @@
-"""Performs basic file I/O and shaping of an Actiwatch CSV file"""
+# -*- coding: utf-8 -*-
+
+"""
+actiwatch.file_import
+~~~~~~~~~~~~~~~~~~~~~
+
+Performs basic file I/O and shaping of an Actiwatch CSV file
+"""
 
 from datetime import datetime
 import pandas as pd
@@ -6,7 +13,7 @@ import numpy as np
 import re
 import calendar
 
-from .rle import encode, decode
+from .helpers import encode, decode
 
 
 def get_actigraphy_headers(path):
@@ -179,3 +186,20 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     ### Merge
     csv = pd.merge(csv, zt_bins, on="Hour", how="inner")
     return csv
+
+
+def enum_dates(df):
+    """Return enumerated Date column
+
+    Args:
+        df (pd.DataFrame): Actiware dataframe with "Date" column
+    """
+
+    sorted_dates = sorted(list(set(df["Date"])))
+    date_DF = pd.DataFrame(list(enumerate(sorted_dates)))
+    date_DF.columns = ["Enum_Day", "Date"]
+
+    df = pd.merge(df, date_DF, on="Date", how="inner")
+    df = df.drop(["Day"], axis=1)
+    df = df.rename(columns={"Enum_Day": "Day"})
+    return df

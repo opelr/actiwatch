@@ -1,8 +1,14 @@
-"""Parent class wrapper for Actiware CSVs"""
+# -*- coding: utf-8 -*-
+
+"""
+actiwatch.watch
+~~~~~~~~~~~~~~~
+
+Parent class wrapper for Actiware CSVs
+"""
 
 from .file_import import get_actigraphy_headers, parse_actigraphy_data
-from .enumerated_dates import enum_dates
-from .sunrise import get_sunrise
+from .helpers import get_sunrise, enum_dates
 from .sleep_processing import windowed_sleep, process_sleep
 
 
