@@ -15,7 +15,7 @@ class FileImport_Test(unittest.TestCase):
         self.assertIsNotNone(data)
 
     def test_actigraphy_class(self):
-        watch = actiwatch.Actiwatch(path=self.path, manually_scored=False)
+        watch = actiwatch.Actiwatch(path=self.path, manually_scored=False, sleep_threshold=40)
         self.assertIsNotNone(watch)
 
 

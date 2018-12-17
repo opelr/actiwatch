@@ -7,7 +7,7 @@ actiwatch.helpers
 Helper functions
 """
 
-from itertools import groupby
+from itertools import groupby, chain
 from datetime import datetime
 import pandas as pd
 import numpy as np
@@ -34,6 +34,7 @@ def decode(encode_obj: list):
     return [i for j in nested for i in j]
 
 
+# TODO: Portland should not be default, and this should be an optional function
 def get_sunrise(df, date_column: str):
     """Calculate sunrise and sunset data from a given long/lat pair
 
@@ -90,4 +91,32 @@ def enum_dates(df):
     df = pd.merge(df, date_DF, on="Date", how="inner")
     df = df.drop(["Day"], axis=1)
     df = df.rename(columns={"Enum_Day": "Day"})
+    return df
+
+
+def split_days(df, time: int):
+    """[summary]
+    
+    Args:
+        df ([type]): [description]
+        time (int): Integer hour to split days at (0-23)
+    """
+
+    if not type(time) is int:
+        raise TypeError("'time' must be of type 'int'")
+
+    time_str = str(time % 24).zfill(2) + ":00:00"
+
+    df["Split_Time"] = pd.to_datetime(
+        df["Date"] + " " + time_str, format="%Y-%m-%d %H:%M:%S"
+    ).dt.tz_localize("US/Pacific", ambiguous="NaT", errors="coerce")
+
+    df["Split_Day"] = df["DateTime"] >= df["Split_Time"]
+
+    encoded_days = list(enumerate(encode(df["Split_Day"])))
+    remade_days = [((i - (i % 2)) // 2, x[0]) for i, x in encoded_days]
+    expanded_days = [[i] * x for i, x in remade_days]
+    seq_days = list(chain(*expanded_days))
+    df["Split_Day"] = seq_days
+    del df["Split_Time"]
     return df

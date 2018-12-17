@@ -108,7 +108,7 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     )
     csv = csv.replace({"Sleep_Acti": {1.0: "Wake", 0.0: "Sleep"}})
     csv["Interval"] = np.where(csv["Interval"] == "ACTIVE", "Active", "Rest")
-    csv["watch_ID"] = header_info["watch_ID"].tolist()[0]
+    csv["watch_ID"] = header_info.iloc[0]["watch_ID"]
 
     ## Bed-/wake-time manual scoring
     if manually_scored:
@@ -132,9 +132,8 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     ## Datetime calculations
     csv["DateTime"] = pd.to_datetime(
         csv["Date"] + " " + csv["Time"], format="%Y-%m-%d %I:%M:%S %p"
-    )
+    ).dt.tz_localize("US/Pacific", ambiguous="NaT", errors="coerce")
     csv["ClockTime"] = pd.to_datetime(csv["Time"], format="%I:%M:%S %p")
-    # csv['ClockTime'] = csv['Time']
     csv["Hour"] = csv["ClockTime"].apply(lambda x: x.hour)
     csv["AM_PM"] = np.floor(csv["Hour"] / 12)
     csv["AM_PM"] = csv.replace({"AM_PM": {1.0: "PM", 0.0: "AM"}})
@@ -144,20 +143,6 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     )
     csv["DateAbbr"] = csv["DateTime"].dt.strftime("%b %d")
     csv["Month"] = csv["DateTime"].dt.strftime("%B")
-
-    ## DAR -- requires some temporary columns
-    csv["temp_7AM"] = [
-        datetime.strptime(x + " 07:00:00", "%Y-%m-%d %H:%M:%S") for x in csv.Date
-    ]
-    csv["temp_7PM"] = [
-        datetime.strptime(x + " 18:59:59", "%Y-%m-%d %H:%M:%S") for x in csv.Date
-    ]
-    csv["DAR_77"] = np.where(
-        ((csv["DateTime"] <= csv["temp_7AM"]) | (csv["DateTime"] >= csv["temp_7PM"])),
-        "Night",
-        "Day",
-    )
-    csv = csv.drop(["temp_7AM", "temp_7PM"], axis=1)
 
     ## Add log-space columns -- adding 1 to avoid div/0 errors
     csv["Activity"] = csv["Activity"] + 1
@@ -186,20 +171,3 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     ### Merge
     csv = pd.merge(csv, zt_bins, on="Hour", how="inner")
     return csv
-
-
-def enum_dates(df):
-    """Return enumerated Date column
-
-    Args:
-        df (pd.DataFrame): Actiware dataframe with "Date" column
-    """
-
-    sorted_dates = sorted(list(set(df["Date"])))
-    date_DF = pd.DataFrame(list(enumerate(sorted_dates)))
-    date_DF.columns = ["Enum_Day", "Date"]
-
-    df = pd.merge(df, date_DF, on="Date", how="inner")
-    df = df.drop(["Day"], axis=1)
-    df = df.rename(columns={"Enum_Day": "Day"})
-    return df
