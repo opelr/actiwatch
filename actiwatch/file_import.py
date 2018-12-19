@@ -13,7 +13,7 @@ import numpy as np
 import re
 import calendar
 
-from .helpers import encode, decode
+from .helpers import encode, decode, make_sleep_interval
 
 
 def get_actigraphy_headers(path):
@@ -112,32 +112,19 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
 
     ## Bed-/wake-time manual scoring
     if manually_scored:
-
-        def make_sleep_interval(vec):
-            sleep_rle = encode(vec)
-            if len(sleep_rle) > 4:
-                for i in sleep_rle[1::4]:
-                    i[1] = "Falling_Asleep"
-
-                for i in sleep_rle[2::4]:
-                    i[1] = "Sleeping"
-
-                for i in sleep_rle[3::4]:
-                    i[1] = "Waking_Up"
-
-            return decode(sleep_rle)
-
         csv["Interval"] = make_sleep_interval(csv["Interval"].tolist())
 
     ## Datetime calculations
     csv["DateTime"] = pd.to_datetime(
         csv["Date"] + " " + csv["Time"], format="%Y-%m-%d %I:%M:%S %p"
-    ).dt.tz_localize("US/Pacific", ambiguous="NaT", errors="coerce")
+    )
+    # .dt.tz_localize("US/Pacific", ambiguous="NaT", errors="coerce")
+    csv = csv[csv["DateTime"].notna()]
     csv["ClockTime"] = pd.to_datetime(csv["Time"], format="%I:%M:%S %p")
     csv["Hour"] = csv["ClockTime"].apply(lambda x: x.hour)
     csv["AM_PM"] = np.floor(csv["Hour"] / 12)
     csv["AM_PM"] = csv.replace({"AM_PM": {1.0: "PM", 0.0: "AM"}})
-    csv["Day_of_Week"] = csv["DateTime"].apply(lambda x: calendar.day_name[x.weekday()])
+    csv["Day_of_Week"] = csv["DateTime"].apply(lambda x: calendar.day_name[int(x.weekday())])
     csv["Weekend"] = csv["Day_of_Week"].apply(
         lambda y: any(x in y for x in ["Saturday", "Sunday"])
     )

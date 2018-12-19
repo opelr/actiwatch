@@ -1,4 +1,4 @@
-"""Unittest of actigex.app.file_import"""
+# -*- coding: utf-8 -*-
 
 from .context import actiwatch
 import unittest

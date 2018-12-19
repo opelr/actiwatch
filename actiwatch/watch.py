@@ -9,7 +9,7 @@ Parent class wrapper for Actiware CSVs
 
 from .file_import import get_actigraphy_headers, parse_actigraphy_data
 from .helpers import get_sunrise, enum_dates, split_days
-from .sleep_processing import windowed_sleep
+from .sleep_processing import windowed_sleep, smooth_sleep
 
 
 class Actiwatch:
@@ -39,8 +39,12 @@ class Actiwatch:
         dat = parse_actigraphy_data(self._path, self.header_info, self._manually_scored)
         # dat = get_sunrise(dat, "Date")
         dat = enum_dates(dat)
+        dat = dat.sort_values(by=["Line"])
         dat = split_days(dat, 16)
         dat["Sleep_Acti"] = windowed_sleep(
             dat["Activity"].tolist(), 40, self._recording_interval
+        )
+        dat["Sleep_Acti_Smooth"] = smooth_sleep(
+            dat["Sleep_Acti"].tolist(), self._recording_interval
         )
         return dat

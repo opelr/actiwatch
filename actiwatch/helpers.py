@@ -11,7 +11,8 @@ from itertools import groupby, chain
 from datetime import datetime
 import pandas as pd
 import numpy as np
-from astral import Location
+
+# from astral import Location
 from typing import Iterable
 
 
@@ -31,7 +32,27 @@ def decode(encode_obj: list):
         encode_obj (list): Encode object (from `encode`) to stitch together
     """
     nested = [[c] * n for n, c in encode_obj]
-    return [i for j in nested for i in j]
+    return list(chain(*nested))
+
+
+def make_sleep_interval(vec):
+    """[summary]
+    
+    Args:
+        vec ([type]): [description]
+    """
+    sleep_rle = encode(vec)
+    if len(sleep_rle) > 4:
+        for i in sleep_rle[1::4]:
+            i[1] = "Falling_Asleep"
+
+        for i in sleep_rle[2::4]:
+            i[1] = "Rest"
+
+        for i in sleep_rle[3::4]:
+            i[1] = "Waking_Up"
+
+    return decode(sleep_rle)
 
 
 # TODO: Portland should not be default, and this should be an optional function
@@ -89,7 +110,8 @@ def enum_dates(df):
     date_DF.columns = ["Enum_Day", "Date"]
 
     df = pd.merge(df, date_DF, on="Date", how="inner")
-    df = df.drop(["Day"], axis=1)
+    if "Day" in df.columns:
+        df = df.drop(["Day"], axis=1)
     df = df.rename(columns={"Enum_Day": "Day"})
     return df
 
@@ -109,12 +131,17 @@ def split_days(df, time: int):
 
     df["Split_Time"] = pd.to_datetime(
         df["Date"] + " " + time_str, format="%Y-%m-%d %H:%M:%S"
-    ).dt.tz_localize("US/Pacific", ambiguous="NaT", errors="coerce")
+    )
 
     df["Split_Day"] = df["DateTime"] >= df["Split_Time"]
 
     encoded_days = list(enumerate(encode(df["Split_Day"])))
-    remade_days = [((i - (i % 2)) // 2, x[0]) for i, x in encoded_days]
+
+    if df["Split_Day"][0]:
+        remade_days = [((i - (i % 2)) // 2, x[0]) for i, x in encoded_days]
+    else:
+        remade_days = [((i + 1) // 2, x[0]) for i, x in encoded_days]
+
     expanded_days = [[i] * x for i, x in remade_days]
     seq_days = list(chain(*expanded_days))
     df["Split_Day"] = seq_days
