@@ -24,8 +24,9 @@ class Actiwatch:
 
     Args:
         path (str): Filepath to a raw, Actiware-exported CSV file
-        manually_scored (bool): Is the file of the 'Bedtime' variety?
+        start_time (int): Hour (0-23) that days are split on.
         sleep_threshold (int): Activity threshold for wake scoring (20 = low, 40 = medium, 80 = high)
+        manually_scored (bool): Is the file of the 'Bedtime' variety?
     """
 
     def __init__(self, path, start_time, sleep_threshold, manually_scored):
