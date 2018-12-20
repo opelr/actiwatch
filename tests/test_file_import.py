@@ -12,7 +12,7 @@ class FileImport_Test(unittest.TestCase):
     def test_import(self):
         headers = actiwatch.file_import.get_actigraphy_headers(self.path)
         assert headers is not None
-        assert type(headers) == pd.DataFrame
+        assert type(headers) == dict
 
         data = actiwatch.file_import.parse_actigraphy_data(self.path, headers)
         assert data is not None

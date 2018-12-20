@@ -36,8 +36,8 @@ class Actiwatch:
         self._manually_scored = manually_scored
 
         self.header = get_actigraphy_headers(self._path)
-        self._recording_interval = self.header.iloc[0]["recording_epoch_length"]
-        self.patient_id = self.header["watch_ID"][0]
+        self._recording_interval = self.header["recording_epoch_length"]
+        self.patient_id = self.header["watch_ID"]
 
         self.data = self._generate_data()
 

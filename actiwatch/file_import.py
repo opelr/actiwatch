@@ -71,8 +71,9 @@ def get_actigraphy_headers(path):
         "threshold_wake": threshold_wake,
         "threshold_light": threshold_light,
     }
-    header_info = pd.DataFrame([header_dict])
-    return header_info
+    return header_dict
+    # header_info = pd.DataFrame([header_dict])
+    # return header_info
 
 
 def parse_actigraphy_data(path, header_info, manually_scored=False):
@@ -108,7 +109,7 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     )
     csv = csv.replace({"Sleep_Acti": {1.0: "Wake", 0.0: "Sleep"}})
     csv["Interval"] = np.where(csv["Interval"] == "ACTIVE", "Active", "Rest")
-    csv["watch_ID"] = header_info.iloc[0]["watch_ID"]
+    csv["watch_ID"] = header_info["watch_ID"]
 
     ## Bed-/wake-time manual scoring
     if manually_scored:
