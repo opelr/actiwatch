@@ -9,7 +9,7 @@ class AnalysisTest(unittest.TestCase):
     def setUp(self):
         self.path = "tests/data/Example_Data_Bedtime.csv"
         self.watch = actiwatch.Actiwatch(
-            path=self.path, manually_scored=True, sleep_threshold=40
+            path=self.path, start_time=16, sleep_threshold=40, manually_scored=True
         )
 
     def test_sleep_metrics(self):

@@ -20,7 +20,7 @@ class FileImport_Test(unittest.TestCase):
 
     def test_actigraphy_class(self):
         watch = actiwatch.Actiwatch(
-            path=self.path, manually_scored=True, sleep_threshold=40
+            path=self.path, start_time=16, sleep_threshold=40, manually_scored=True
         )
         assert watch is not None
         assert type(watch.data) == pd.DataFrame
