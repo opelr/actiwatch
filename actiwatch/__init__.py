@@ -13,7 +13,6 @@ from .__version__ import __author__, __author_email__, __license__
 from .__version__ import __copyright__
 
 from actiwatch.watch import Actiwatch
-# import actiwatch.analysis
 
 
 __all__ = ["Actiwatch"]

@@ -127,25 +127,25 @@ def cole_post_process(rle: list, rec_freq: int):
 
     for indx, rle_i in enumerate(rle):
         rle_len, rle_value = rle_i
-        
+
         if indx == 0 or rle_value is np.nan:
             new.append([rle_len, rle_value])
             continue
-        
+
         if rle_value == "Wake":
             if rle_len in [1, 2]:
                 new.append([rle_len, "Sleep"])
             else:
                 new.append([rle_len, rle_value])
             continue
-        
+
         time_min = (rle_len * rec_freq) // 60
         time_prev_min = (rle[indx - 1][0] * rec_freq) // 60
         try:
             time_post_min = (rle[indx + 1][0] * rec_freq) // 60
         except IndexError:
             time_post_min = 0
-        
+
         if (
             (time_min == 1 and time_prev_min >= 4)
             or (time_min == 3 and time_prev_min >= 10)

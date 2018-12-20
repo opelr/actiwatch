@@ -124,7 +124,9 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     csv["Hour"] = csv["ClockTime"].apply(lambda x: x.hour)
     csv["AM_PM"] = np.floor(csv["Hour"] / 12)
     csv["AM_PM"] = csv.replace({"AM_PM": {1.0: "PM", 0.0: "AM"}})
-    csv["Day_of_Week"] = csv["DateTime"].apply(lambda x: calendar.day_name[int(x.weekday())])
+    csv["Day_of_Week"] = csv["DateTime"].apply(
+        lambda x: calendar.day_name[int(x.weekday())]
+    )
     csv["Weekend"] = csv["Day_of_Week"].apply(
         lambda y: any(x in y for x in ["Saturday", "Sunday"])
     )
