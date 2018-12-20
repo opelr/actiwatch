@@ -42,7 +42,9 @@ class AnalysisTest(unittest.TestCase):
         pass
 
     def test_relative_amplitude(self):
-        pass
+        out = actiwatch.analysis.relative_amplitude(self.watch.data, 16)
+        assert type(out) == pd.DataFrame
+        assert all([i in out.columns for i in ["Split_Day", "RA"]])
 
     def test_total_values(self):
         out = actiwatch.analysis.total_values(
