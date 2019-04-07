@@ -13,7 +13,7 @@ import numpy as np
 import re
 import calendar
 
-from .helpers import encode, decode, make_sleep_interval
+from .helpers import make_sleep_interval
 
 
 def get_actigraphy_headers(path):
@@ -88,13 +88,13 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
         Data frame containing epoch-by-epoch data for a single file
     """
 
-    ## Read entire CSV file to a table, force number of columns
+    # Read entire CSV file to a table, force number of columns
     forced_names = ["X" + i for i in list(map(str, list(range(1, 45))))]
     csv = pd.read_csv(
         path, names=forced_names, low_memory=False, skip_blank_lines=False
     )
 
-    ## Find Epoch-by-Epoch data and skip to it
+    # Find Epoch-by-Epoch data and skip to it
     start_row = csv.index[csv["X1"] == "Line"].tolist()[-1]
 
     csv = pd.read_csv(path, low_memory=False, skiprows=start_row)
@@ -111,11 +111,11 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     csv["Interval"] = np.where(csv["Interval"] == "ACTIVE", "Active", "Rest")
     csv["watch_ID"] = header_info["watch_ID"]
 
-    ## Bed-/wake-time manual scoring
+    # Bed-/wake-time manual scoring
     if manually_scored:
         csv["Interval"] = make_sleep_interval(csv["Interval"].tolist())
 
-    ## Datetime calculations
+    # Datetime calculations
     csv["DateTime"] = pd.to_datetime(
         csv["Date"] + " " + csv["Time"], format="%Y-%m-%d %I:%M:%S %p"
     )
@@ -134,19 +134,19 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
     csv["DateAbbr"] = csv["DateTime"].dt.strftime("%b %d")
     csv["Month"] = csv["DateTime"].dt.strftime("%B")
 
-    ## Add log-space columns -- adding 1 to avoid div/0 errors
+    # Add log-space columns -- adding 1 to avoid div/0 errors
     csv["Activity"] = csv["Activity"] + 1
     csv["Light"] = csv["Light"] + 1
     csv["Log_Activity"] = np.log10(csv["Activity"] + 1)
     csv["Log_Light"] = np.log10(csv["Light"])
 
-    ## Zeitgeber Time bins
-    ### ZT6
+    # Zeitgeber Time bins
+    # ZT6
     zt_6_hours = []
     for hr in [["12AM-6AM"], ["6AM-12PM"], ["12PM-6PM"], ["6PM-12AM"]]:
         zt_6_hours.append(hr * 6)
 
-    ### ZT 12
+    # ZT 12
     zt_12_hours = []
     for hr in [["6PM-6AM"], ["6AM-6PM"], ["6AM-6PM"], ["6PM-6AM"]]:
         zt_12_hours.append(hr * 6)
@@ -158,6 +158,6 @@ def parse_actigraphy_data(path, header_info, manually_scored=False):
         list(zip(range(24), zt_6_hours, zt_12_hours)), columns=["Hour", "ZT6", "ZT12"]
     )
 
-    ### Merge
+    # Merge
     csv = pd.merge(csv, zt_bins, on="Hour", how="inner")
     return csv

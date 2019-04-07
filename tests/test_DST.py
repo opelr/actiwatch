@@ -22,7 +22,7 @@ class TZ_Localize_Test(unittest.TestCase):
 
         try:
             pd.to_datetime(df["DateTime"]).dt.tz_localize(
-                "US/Pacific", ambiguous="NaT", errors="coerce"
+                "US/Pacific", ambiguous="NaT", nonexistent="NaT"
             )
         except pytz.exceptions.NonExistentTimeError:
             self.fail("Daylight Savings Time error during localization")

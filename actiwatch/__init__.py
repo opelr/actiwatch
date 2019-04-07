@@ -7,7 +7,7 @@ devices. Basic useage:
 
     >>> import actiwatch
     >>> watch = actiwatch.Actiwatch(path="/path/to/file/.../example.csv",
-                                    start_time=16,
+                                    start_hour=16,
                                     sleep_threshold=40,
                                     manually_scored=True)
     >>> watch

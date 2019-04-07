@@ -15,11 +15,11 @@ import pandas as pd
 
 def list_files(path: str, mask: str):
     """Generate list of actiwatch files
-    
+
     Args:
         path (str): Path to containing folder
         mask (str): Regular expression filter
-    
+
     Example:
         >>> path = "D:/data/acquired_data/human/h4085/Actigraphy/CSV"
         >>> mask = "*_Bedtime.csv"
@@ -30,15 +30,15 @@ def list_files(path: str, mask: str):
     return glob.glob(path_str)
 
 
-def map_watch_class(file_paths, start_time, sleep_threshold, manually_scored):
+def map_watch_class(file_paths, start_hour, sleep_threshold, manually_scored):
     """Map actiwatch.Actiwatch class on to a list of actiwatch files
-    
+
     Args:
         file_paths (list): List of paths to actiwatch data
-        start_time (int): Hour (0-23) that days are split on.
+        start_hour (int): Hour (0-23) that days are split on.
         sleep_threshold (int): Activity threshold for wake scoring (20 = low, 40 = medium, 80 = high).
         manually_scored (bool): Is the file of the 'Bedtime' variety?
-    
+
     Returns:
         list: List of actiwatch.Actiwatch instances
     """
@@ -46,7 +46,7 @@ def map_watch_class(file_paths, start_time, sleep_threshold, manually_scored):
         map(
             lambda x: actiwatch.Actiwatch(
                 x,
-                start_time=start_time,
+                start_hour=start_hour,
                 sleep_threshold=sleep_threshold,
                 manually_scored=manually_scored,
             ),
@@ -57,12 +57,12 @@ def map_watch_class(file_paths, start_time, sleep_threshold, manually_scored):
 
 def generate_single_result(analysis, watch_list):
     """Returns a dataframe of a single analysis for all instances in 'watch_list'
-    
+
     Args:
         analysis (str): Analysis property of actiwatch.Actiwatch class
         watch_list (list): List of actiwatch.Actiwatch instances
     """
-    if not analysis in actiwatch.Actiwatch.__dict__.keys():
+    if analysis not in actiwatch.Actiwatch.__dict__.keys():
         raise AttributeError(f"Actiwatch class does not have attribute {analysis}")
 
     if not all([type(i) == actiwatch.Actiwatch for i in watch_list]):
@@ -82,7 +82,7 @@ def generate_single_result(analysis, watch_list):
 
 def generate_all_results(watch_list):
     """Returns a dataframe of all analyses for all instances in 'watch_list'
-    
+
     Args:
         watch_list (list): List of actiwatch.Actiwatch instances
     """

@@ -12,7 +12,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-# from astral import Location
+from astral import Location
 from typing import Iterable
 
 
@@ -36,8 +36,8 @@ def decode(encode_obj: list):
 
 
 def make_sleep_interval(vec):
-    """[summary]
-    
+    """Convert manually-scored 
+
     Args:
         vec ([type]): [description]
     """
@@ -69,7 +69,7 @@ def get_sunrise(df, date_column: str):
     row_verification = len(df.index)
     dates = sorted(list(set(df[date_column])))
 
-    ## Get sunrise/sunset times
+    # Get sunrise/sunset times
     portland = Location(("Portland", "USA", 45.5231, -122.6765, "US/Pacific", 50))
     unique_datetimes = [datetime.strptime(x, "%Y-%m-%d") for x in dates]
     sun_dict = {i: portland.sun(j) for i, j in zip(dates, unique_datetimes)}
@@ -80,10 +80,10 @@ def get_sunrise(df, date_column: str):
     sun_DF = sun_DF[["Date", "sunrise", "sunset"]]
     sun_DF.rename({"Date": date_column}, inplace=True)
 
-    ## Merge sun_DF and df
+    # Merge sun_DF and df
     df_merged = pd.merge(df, sun_DF, on=date_column, how="inner")
     df_merged["DateTime"] = pd.to_datetime(df_merged["DateTime"]).dt.tz_localize(
-        "US/Pacific", ambiguous="NaT", errors="coerce"
+        "US/Pacific", ambiguous="NaT", nonexistent="NaT"
     )
     df_merged["SunPeriod"] = np.where(
         (
@@ -118,7 +118,7 @@ def enum_dates(df):
 
 def split_days(df, time: int):
     """[summary]
-    
+
     Args:
         df ([type]): [description]
         time (int): Integer hour to split days at (0-23)

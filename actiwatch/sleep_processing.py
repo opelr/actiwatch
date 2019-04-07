@@ -1,7 +1,5 @@
 """Sleep and light processing"""
 
-import pandas as pd
-from itertools import chain
 import numpy as np
 from .helpers import encode, decode
 
@@ -21,7 +19,7 @@ def windowed_sleep(col, threshold: int, sampling_interval: int):
       windowed_sleep(df['Activity'].tolist(), 40)
     """
 
-    if not sampling_interval in [15, 30, 60, 120]:
+    if sampling_interval not in [15, 30, 60, 120]:
         raise ValueError("'sampling_interval' must be on one: 15, 30, 60, or 120")
 
     temp = []
@@ -118,7 +116,7 @@ def windowed_sleep(col, threshold: int, sampling_interval: int):
 
 def cole_post_process(rle: list, rec_freq: int):
     """Recursively apply sleep smoothing to RLE object
-    
+
     Args:
         rle_df (list): [description]
         rec_freq (int): [description]
