@@ -36,7 +36,7 @@ def decode(encode_obj: list):
 
 
 def make_sleep_interval(vec):
-    """Convert manually-scored 
+    """Convert manually-scored sleep data to correct interval
 
     Args:
         vec ([type]): [description]
@@ -117,14 +117,14 @@ def enum_dates(df):
 
 
 def split_days(df, time: int):
-    """[summary]
+    """Cut days at specified time.
 
     Args:
-        df ([type]): [description]
+        df (pd.DataFrame): Actiware dataframe with "Date" column
         time (int): Integer hour to split days at (0-23)
     """
 
-    if not type(time) is int:
+    if not isinstance(time, int):
         raise TypeError("'time' must be of type 'int'")
 
     time_str = str(time % 24).zfill(2) + ":00:00"
