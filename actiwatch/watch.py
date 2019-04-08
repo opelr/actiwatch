@@ -44,6 +44,9 @@ class Actiwatch:
     def __repr__(self):
         return f"<Actiwatch [{self.patient_id}]>"
 
+    def __eq__(self, other):
+        return self.header == other.header and self.data.equals(other.data)
+
     def _generate_data(self):
         """
         Aggregate all shaping functions from the module, creating a single
